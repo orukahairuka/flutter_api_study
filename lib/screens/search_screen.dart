@@ -13,15 +13,36 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _serarchScreenState extends State<SearchScreen> {
+  List<Article> _articles = []; //検索結果を格納するリスト
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 197, 59, 0),
-        title: const Text('Qiita Search'),
-      ),
-      body: Container(),
-    );
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(255, 197, 59, 0),
+          title: const Text('Qiita Search'),
+        ),
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 36,
+              ),
+              child: TextField(
+                style: const TextStyle(fontSize: 18, color: Colors.black),
+                decoration: const InputDecoration(
+                  hintText: 'キーワードを入力してください',
+                ),
+                onSubmitted: (String value) async {
+                  final results = await searchQiita(value);//検索処理を実行する
+                  setState(() {
+                    _articles = results;//検索結果を更新する
+                  });
+                }, 
+              ),
+            ),
+          ],
+        ));
   }
 }
 
@@ -46,6 +67,6 @@ Future<List<Article>> searchQiita(String keyword) async {
   }
 // 4. 変換したArticleクラスの配列を返す(returnする)
 //レスポンスをモデルクラスへ変換
-final List<dynamic>body = jsonDecode(res.body);
-return body.map((dynamic json) => Article.fromJson(json)).toList();
+  final List<dynamic> body = jsonDecode(res.body);
+  return body.map((dynamic json) => Article.fromJson(json)).toList();
 }
